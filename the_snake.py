@@ -53,17 +53,40 @@ def draw_cell(position, color):
     pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
 
 
-class Apple:
-    """Apple object class"""
+class GameObject:
+    """Base class for game objects."""
 
-    def __init__(self, snake_positions):
+    def __init__(self, position=(0, 0), color=(255, 255, 255)):
+        """
+        Initialize the GameObject.
+
+        Args:
+            position (tuple): The (x, y) coordinates of the object.
+            color (tuple): The color of the object in RGB format.
+        """
+        self.position = position
+        self.color = color
+        self.body_color = color  # Добавляем атрибут body_color
+
+    def draw(self):
+        """Draw the object on the game board."""
+        draw_cell(self.position, self.body_color) 
+
+
+class Apple(GameObject):
+    """Apple object class that inherits from GameObject."""
+
+    def __init__(self, snake_positions=None):
         """
         Initialize the Apple object.
 
         Args:
             snake_positions (list): List of positions occupied by the snake.
         """
-        self.position = self.generate_position(snake_positions)
+        if snake_positions is None:
+            snake_positions = []  
+        position = self.generate_position(snake_positions)
+        super().__init__(position, APPLE_COLOR)
 
     def generate_position(self, snake_positions):
         """
@@ -79,17 +102,25 @@ class Apple:
         free_cells = ALL_CELLS - set(snake_positions)
         return choice(tuple(free_cells))
 
-    def draw(self):
-        """Draw the apple on the game board."""
-        draw_cell(self.position, APPLE_COLOR)
+    def randomize_position(self, snake_positions):
+        """
+        Randomly repositions the apple, ensuring it does not overlap
+        with the snake's positions.
+
+        Args:
+            snake_positions (list): List of positions occupied by the snake.
+        """
+        self.position = self.generate_position(snake_positions)
 
 
-class Snake:
-    """Snake object class"""
+class Snake(GameObject):
+    """Snake object class that inherits from GameObject."""
 
     def __init__(self):
         """Initialize the Snake object."""
         self.reset()
+        self.body_color = SNAKE_COLOR  # Добавляем атрибут body_color
+        super().__init__(self.positions[0], self.body_color)
 
     def reset(self):
         """Reset the snake to its starting position and direction."""
@@ -122,6 +153,9 @@ class Snake:
         else:
             self.positions.insert(0, new_head)
 
+        # Обновляем позицию объекта Snake для отрисовки
+        self.position = self.positions[0]
+
     def grow(self):
         """Trigger the snake to grow on the next move."""
         self.growing = True
@@ -139,8 +173,8 @@ class Snake:
             pygame.K_LEFT: LEFT,
             pygame.K_RIGHT: RIGHT
         }.get(key)
-        if new_direction and new_direction != OPPOSITE_DIRECTIONS[self
-                                                                  .direction]:
+        if new_direction and new_direction != OPPOSITE_DIRECTIONS[self.
+                                                                  direction]:
             self.next_direction = new_direction
 
     def update_direction(self):
@@ -149,11 +183,15 @@ class Snake:
             self.direction = self.next_direction
             self.next_direction = None
 
+    def get_head_position(self):
+        """Return the current position of the snake's head."""
+        return self.positions[0]
+
     def draw(self):
         """Draw the snake on the game board."""
-        draw_cell(self.positions[0], SNAKE_COLOR)
+        super().draw()  # Draw the head
         for position in self.positions[1:]:
-            draw_cell(position, SNAKE_COLOR)
+            draw_cell(position, self.body_color)  # Draw the body
 
 
 def handle_keys(snake):
@@ -201,3 +239,7 @@ def main():
         snake.draw()
         apple.draw()
         pygame.display.flip()
+
+
+if __name__ == "__main__":
+    main()
