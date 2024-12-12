@@ -70,7 +70,7 @@ class GameObject:
 
     def draw(self):
         """Draw the object on the game board."""
-        draw_cell(self.position, self.body_color) 
+        draw_cell(self.position, self.body_color)
 
 
 class Apple(GameObject):
@@ -84,7 +84,7 @@ class Apple(GameObject):
             snake_positions (list): List of positions occupied by the snake.
         """
         if snake_positions is None:
-            snake_positions = []  
+            snake_positions = []
         position = self.generate_position(snake_positions)
         super().__init__(position, APPLE_COLOR)
 
@@ -124,7 +124,7 @@ class Snake(GameObject):
 
     def reset(self):
         """Reset the snake to its starting position and direction."""
-        self.positions = [(GRID_WIDTH // 2 * GRID_SIZE, GRID_HEIGHT 
+        self.positions = [(GRID_WIDTH // 2 * GRID_SIZE, GRID_HEIGHT
                            // 2 * GRID_SIZE)]
         self.direction = RIGHT
         self.next_direction = None
@@ -140,7 +140,7 @@ class Snake(GameObject):
         """
         head_x, head_y = self.positions[0]
         dir_x, dir_y = self.direction
-        new_head = ((head_x + dir_x * GRID_SIZE) % SCREEN_WIDTH, 
+        new_head = ((head_x + dir_x * GRID_SIZE) % SCREEN_WIDTH,
                     (head_y + dir_y * GRID_SIZE) % SCREEN_HEIGHT)
 
         if self.growing:
