@@ -1,6 +1,6 @@
 from random import choice
-import pygame
 
+import pygame
 # Константы для размеров поля и сетки:
 SCREEN_WIDTH, SCREEN_HEIGHT = 640, 480
 GRID_SIZE = 20
